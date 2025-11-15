@@ -1,13 +1,12 @@
 package core;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Assignment {
     private Map<IntVariable, Integer> assignment = new HashMap<>();
 
-    public Map<IntVariable, Integer> getAssignment() {
+    public Map<IntVariable, Integer> getAssignements() {
         return assignment;
     }
 
@@ -23,23 +22,8 @@ public class Assignment {
         assignment.remove(var);
     }
 
-    public boolean isComplete(List<IntVariable> vars) {
-        return assignment.size() == vars.size();
-    }
-
-    public boolean isConsistent(List<Constraint> constraints) {
-        for (Constraint c : constraints) {
-            if (!c.isSatisfied()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public Assignment copy() {
-        Assignment clone = new Assignment();
-        clone.assignment.putAll(this.assignment);
-        return clone;
+    public boolean isAssigned(IntVariable var) {
+        return assignment.containsKey(var);
     }
 
 }

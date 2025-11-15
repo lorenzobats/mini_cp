@@ -8,4 +8,12 @@ public class IntVariable {
         this.domain = domain;
         this.name = name;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public Domain getDomain() {
+        return domain;
+    }
 }

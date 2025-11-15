@@ -1,5 +1,5 @@
 package core;
 
 public interface Solver {
-    Assignment solve(Model model);
+    boolean solve(Model model, Assignment assignment);
 }

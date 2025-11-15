@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Model {
-    List<IntVariable> variables;
-    List<Constraint> constraints;
+    List<IntVariable> variables = new ArrayList<>();
+    List<Constraint> constraints = new ArrayList<>();
 
     public Model() {
     }

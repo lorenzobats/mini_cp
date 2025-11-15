@@ -4,6 +4,7 @@ import java.util.Set;
 
 public class Domain {
     Set<Integer> values;
+
     public Domain(Set<Integer> values) {
         this.values = values;
     }
@@ -18,5 +19,9 @@ public class Domain {
 
     public boolean remove(int value) {
         return values.remove(value);
+    }
+
+    public Set<Integer> getValues() {
+        return values;
     }
 }

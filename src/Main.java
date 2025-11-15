@@ -49,11 +49,12 @@ public class Main {
         model.addConstraint(c9);
 
         Solver solver = new BacktrackingSolver();
+        Assignment assignment = new Assignment();
 
-        Assignment solution = solver.solve(model);
-        if (solution != null) {
-            for (Map.Entry<IntVariable, Integer> assignment : solution.getAssignment().entrySet()) {
-                System.out.println(assignment.getKey() + " " + assignment.getValue());
+        boolean solution = solver.solve(model, assignment);
+        if (solution) {
+            for (Map.Entry<IntVariable, Integer> a : assignment.getAssignements().entrySet()) {
+                System.out.println(a.getKey().getName() + " " + a.getValue());
             }
         } else {
             System.out.println("No solution found!");

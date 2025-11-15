@@ -1,29 +1,56 @@
 package solver;
 
-import core.Assignment;
-import core.IntVariable;
-import core.Model;
-import core.Solver;
+import core.*;
+
+import java.util.List;
 
 public class BacktrackingSolver implements Solver {
     private boolean enableForwardChecking;
 
+    @Override
+    public boolean solve(Model model, Assignment assignment) {
+        if (isComplete(model.getVariables(), assignment)) {
+            return true;
+        }
 
-    public boolean isConsistent(Assignment assignment, IntVariable var, int value, Model model) {
+        IntVariable var = selectUnassigned(model.getVariables(), assignment);
+
+        for (int value : var.getDomain().getValues()) {
+            assignment.setValue(var, value);
+            if (isConsistent(assignment, var, model.getConstraints())) {
+                if (solve(model, assignment)) {
+                    return true;
+                }
+            }
+            assignment.remove(var);
+        }
         return false;
     }
 
-    public IntVariable selectUnassigned(Model model, Assignment assignment) {
-        return null;
+    public boolean isConsistent(Assignment assignment, IntVariable var, List<Constraint> constraints) {
+        for (Constraint constraint : constraints) {
+            if (constraint.getVariables().contains(var) && !constraint.isSatisfied(assignment)) {
+                return false;
+            }
+        }
+        return true;
     }
 
-
-    public Assignment backtrack(Assignment assignment, Model model) {
-        return null;
+    public boolean isComplete(List<IntVariable> vars, Assignment assignment) {
+        for (IntVariable var : vars) {
+            if (!assignment.isAssigned(var)) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    @Override
-    public Assignment solve(Model model) {
+    public IntVariable selectUnassigned(List<IntVariable> variables, Assignment assignment) {
+        for (IntVariable var : variables) {
+            if (!assignment.isAssigned(var)) {
+                return var;
+            }
+        }
         return null;
     }
 }
