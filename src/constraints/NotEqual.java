@@ -2,10 +2,11 @@ package constraints;
 
 import core.Assignment;
 import core.Constraint;
+import core.Domain;
 import core.IntVariable;
-import core.Model;
 
 import java.util.List;
+import java.util.Map;
 
 public class NotEqual implements Constraint {
     private final IntVariable var1;
@@ -32,7 +33,7 @@ public class NotEqual implements Constraint {
     }
 
     @Override
-    public boolean propagate(Model model, IntVariable var) {
+    public boolean propagate(Assignment assignment, Map<IntVariable, Domain> domains) {
         return false;
     }
 }
