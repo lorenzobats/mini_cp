@@ -1,27 +1,21 @@
 package core;
 
-import java.util.Set;
+public interface Domain {
+    int min();
 
-public class Domain {
-    Set<Integer> values;
+    int max();
 
-    public Domain(Set<Integer> values) {
-        this.values = values;
-    }
+    int size();
 
-    public boolean isBound() {
-        return values.size() == 1;
-    }
+    boolean contains(int value);
 
-    public boolean contains(int value) {
-        return values.contains(value);
-    }
+    boolean isSingleton();
 
-    public boolean remove(int value) {
-        return values.remove(value);
-    }
+    void remove(int v, DomainListener l);
 
-    public Set<Integer> getValues() {
-        return values;
-    }
+    void fix(int v, DomainListener l);
+
+    void removeBelow(int v, DomainListener l);
+
+    void removeAbove(int v, DomainListener l);
 }

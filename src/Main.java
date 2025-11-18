@@ -1,64 +1,71 @@
 import constraints.NotEqual;
-import core.*;
-import solver.BacktrackingSolver;
+import core.Constraint;
+import core.IntVariable;
+import solver.MiniCP;
+import state.StateManager;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        Model model = new Model();
+        StateManager stateManager = new StateManager();
+        MiniCP solver = new MiniCP(stateManager);
 
-        Domain domain = new Domain(Set.of(1, 2, 3));
-        IntVariable wa = new IntVariable(domain, "WA");
-        IntVariable nt = new IntVariable(domain, "NT");
-        IntVariable sa = new IntVariable(domain, "SA");
-        IntVariable q = new IntVariable(domain, "Q");
-        IntVariable v = new IntVariable(domain, "V");
-        IntVariable ta = new IntVariable(domain, "TA");
-        IntVariable nsw = new IntVariable(domain, "NSW");
+        IntVariable q = new IntVariable("q", solver, 1, 3);
+        IntVariable nsw = new IntVariable("nsw", solver, 1, 3);
+        IntVariable sa = new IntVariable("sa", solver, 1, 3);
+        IntVariable v = new IntVariable("v", solver, 1, 3);
+        IntVariable t = new IntVariable("t", solver, 1, 3);
+        IntVariable nt = new IntVariable("nt", solver, 1, 3);
+        IntVariable wa = new IntVariable("wa", solver, 1, 3);
 
-        model.addVariable(wa);
-        model.addVariable(nt);
-        model.addVariable(sa);
-        model.addVariable(q);
-        model.addVariable(v);
-        model.addVariable(ta);
-        model.addVariable(nsw);
+        NotEqual c1 = new NotEqual(wa, nt);
+        NotEqual c2 = new NotEqual(wa, sa);
+        NotEqual c3 = new NotEqual(nt, q);
+        NotEqual c4 = new NotEqual(nt, sa);
+        NotEqual c5 = new NotEqual(q, sa);
+        NotEqual c6 = new NotEqual(q, nsw);
+        NotEqual c7 = new NotEqual(nsw, sa);
+        NotEqual c8 = new NotEqual(nsw, v);
+        NotEqual c9 = new NotEqual(sa, v);
 
-        Constraint c1 = new NotEqual(wa, nt);
-        Constraint c2 = new NotEqual(wa, sa);
-        Constraint c3 = new NotEqual(q, nt);
-        Constraint c4 = new NotEqual(q, nsw);
-        Constraint c5 = new NotEqual(q, sa);
-        Constraint c6 = new NotEqual(v, nsw);
-        Constraint c7 = new NotEqual(v, sa);
-        Constraint c8 = new NotEqual(nt, sa);
-        Constraint c9 = new NotEqual(nsw, sa);
+        List<Constraint> constraints = List.of(c1, c2, c3, c4, c5, c6, c7, c8, c9);
 
-        model.addConstraint(c1);
-        model.addConstraint(c2);
-        model.addConstraint(c3);
-        model.addConstraint(c4);
-        model.addConstraint(c5);
-        model.addConstraint(c6);
-        model.addConstraint(c7);
-        model.addConstraint(c8);
-        model.addConstraint(c9);
+        for (Constraint c : constraints) {
+            solver.post(c);
+        }
 
-        Solver solver = new BacktrackingSolver();
-        Assignment assignment = new Assignment();
-
-        boolean solution = solver.solve(model, assignment);
-        if (solution) {
-            for (Map.Entry<IntVariable, Integer> a : assignment.getAssignements().entrySet()) {
-                System.out.println(a.getKey().getName() + " " + a.getValue());
+        // Simple DFS search
+        if (dfs(solver, new IntVariable[]{wa, nt, sa, q, nsw, v, t}, 0)) {
+            System.out.println("Solution:");
+            for (IntVariable var : new IntVariable[]{wa, nt, sa, q, nsw, v, t}) {
+                System.out.println(var.getName() + ": " + var.min());
             }
         } else {
-            System.out.println("No solution found!");
+            System.out.println("No solution found");
         }
 
     }
+
+    private static boolean dfs(MiniCP solver, IntVariable[] vars, int index) {
+        if (index == vars.length) return true; // all assigned
+
+        IntVariable var = vars[index];
+
+        for (int value = 1; value <= 3; value++) {
+            if (!var.contains(value)) continue;
+
+            solver.pushState();
+            var.fix(value);
+            solver.fixPoint();
+
+            if (dfs(solver, vars, index + 1)) {
+                return true;
+            }
+
+            solver.restoreState();
+        }
+        return false;
+    }
+
 }

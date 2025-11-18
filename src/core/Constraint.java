@@ -1,13 +1,20 @@
 package core;
 
 import java.util.List;
-import java.util.Map;
 
 public interface Constraint {
+    void post();
+
+    void propagate();
+
+    boolean isScheduled();
+
+    void setScheduled(boolean scheduled);
+
+    boolean isActive();
+
+    void setActive(boolean active);
+
     List<IntVariable> getVariables();
-
-    boolean isSatisfied(Assignment assignment);
-
-    boolean propagate(Assignment assignment, Map<IntVariable, Domain> domains);
 
 }

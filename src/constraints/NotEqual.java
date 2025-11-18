@@ -1,39 +1,51 @@
 package constraints;
 
-import core.Assignment;
-import core.Constraint;
-import core.Domain;
 import core.IntVariable;
 
 import java.util.List;
-import java.util.Map;
 
-public class NotEqual implements Constraint {
-    private final IntVariable var1;
-    private final IntVariable var2;
+// x != y + c
+public class NotEqual extends AbstractConstraint {
+    private final IntVariable x;
+    private final IntVariable y;
+    private final int c;
 
-    public NotEqual(IntVariable var1, IntVariable var2) {
-        this.var1 = var1;
-        this.var2 = var2;
+    public NotEqual(IntVariable x, IntVariable y) {
+        super(x.getSolver());
+        this.x = x;
+        this.y = y;
+        this.c = 0;
+    }
+
+    public NotEqual(IntVariable x, IntVariable y, int c) {
+        super(x.getSolver());
+        this.x = x;
+        this.y = y;
+        this.c = c;
     }
 
     @Override
-    public boolean isSatisfied(Assignment assignment) {
-        Integer value1 = assignment.getValue(var1);
-        Integer value2 = assignment.getValue(var2);
-        if (value1 == null || value2 == null)
-            return true;
+    public void post() {
+        // initial inference
+        if (y.isFixed()) x.remove(y.min() + c);
+        else if (x.isFixed()) y.remove(x.min() - c);
+        else {
+            // initial propagation
+            x.propagateOnFix(this);
+            y.propagateOnFix(this);
+        }
+    }
 
-        return !value1.equals(value2);
+    @Override
+    public void propagate() {
+        // when fix event is called
+        if (y.isFixed()) x.remove(y.min() + c);
+        else y.remove(x.min() - c);
+        setActive(false);
     }
 
     @Override
     public List<IntVariable> getVariables() {
-        return List.of(var1, var2);
-    }
-
-    @Override
-    public boolean propagate(Assignment assignment, Map<IntVariable, Domain> domains) {
-        return false;
+        return List.of(x, y);
     }
 }

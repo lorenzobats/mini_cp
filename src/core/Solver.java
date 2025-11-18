@@ -1,5 +1,15 @@
 package core;
 
+import state.StateManager;
+
 public interface Solver {
-    boolean solve(Model model, Assignment assignment);
+    StateManager getStateManager();
+
+    void post(Constraint c);
+
+    void post(Constraint c, boolean enforceFixPoint);
+
+    void schedule(Constraint c);
+
+    void fixPoint();
 }
